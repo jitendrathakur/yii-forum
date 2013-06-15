@@ -1,0 +1,51 @@
+/* general styles */
+html, body {
+	padding:30px 100px;
+	background:#E5E5E5
+}
+* {
+	font-family:Verdana, Arial, sans-serif;
+	color:#000
+}
+h1 {
+	font-size:33px;
+	color:#99CC00;
+	margin:15px 0
+}
+.navigation {
+	margin:10px 0 20px;
+}
+.navigation, .navigation a {
+	color:#608000;
+	font-size:12px;
+}
+.navigation a {
+	margin-right:4px;
+}
+h2 {
+	margin:15px 0 25px;
+	color:#608000;
+	font-size:14px;
+	font-weight:bold
+}
+a:link, a:visited {
+	text-decoration:underline
+}
+.testbutton {
+	margin-bottom:30px;
+	background:#3399FF;
+	padding:6px 25px;
+	border:#003F81 1px solid;
+	color:#FFF;
+	font-size:22px;
+	border-radius:5px; -webkit-border-radius:5px; -moz-border-radius:5px;
+	box-shadow:inset 0 5px 5px #67B3FF; -webkit-box-shadow:inset 0 5px 5px #67B3FF; -moz-box-shadow:inset 0 5px 5px #67B3FF
+}
+.testbutton:hover {
+	background:#198CFF;
+	cursor:pointer
+}
+.footer, .footer * {
+	color:#802D00;
+	font-size:15px
+}

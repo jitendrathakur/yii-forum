@@ -1,0 +1,24 @@
+.code-block {
+	background-color: #EEE8D5;
+    color: #586E75;
+    border: 1px solid #002B36;
+    border-radius: 4px 4px 4px 4px;
+    display: block;
+    line-height: 18px;
+    margin: 0 0 9px;
+    padding: 8.5px;    
+}
+
+.question-block {
+	background-color :palevioletred;
+	 border: 1px solid #002B36;
+    border-radius: 4px 4px 4px 4px;
+    display: block;
+    line-height: 18px;
+    margin: 0 0 9px;
+    padding: 8.5px;   
+}
+
+.question-block i {
+	color: #000000;
+}
