@@ -27,18 +27,56 @@ class QuestionController extends Controller
 	 */
 	public function accessRules()
 	{
-		return array(
-			array('allow',  // allow all users to access 'index' and 'view' actions.
-				'actions'=>array('index','view', 'add', 'edit', 'delete'),
-				'users'=>array('*'),
-			),
-			array('allow', // allow authenticated users to access all actions
-				'users'=>array('@'),
-			),
-			array('deny',  // deny all users
-				'users'=>array('*'),
-			),
+
+		/*$access = array();
+		$groupId = null;
+
+		if (isset(Yii::app()->user->group_id)) {
+		  	$groupId = Yii::app()->user->group_id;	
+		}
+		
+		if (User::model()->getGroupName() == 'Admin') {
+			$access = array(
+				array(
+				 	'allow',  // allow all users to access 'index' and 'view' actions.
+					'actions' => array('add'),
+					'users'=>array('@'),
+					'expression' => "$groupId === 1"
+				),
+				array('deny')
+			);
+
+		} else if (User::model()->getGroupName() == 'User') {
+			
+			$access = array(
+				array(
+				 	'allow',  // allow all users to access 'index' and 'view' actions.
+					'actions' => array('index','view', 'edit', 'delete', 'add'),
+					'users'=>array('@'),
+					'expression' => "$groupId === 2"
+				),
+				array('deny')
+			);
+
+		} else {
+			$access = array(
+				array(
+					'allow',
+					'actions' => array('index', 'add', 'view'),
+					'users'=>array('*')
+				),
+				array('deny')
+			);
+		}*/
+
+		$params = array(
+			'Admin' => array('add', 'edit', 'delete', 'admin_index', 'activated'),
+			'User'  => array('add', 'edit', 'delete'),
+			'Anonymous' => array('index', 'view', 'add')
 		);
+
+		return $this->isGrantAccess($params);
+	
 	}
 
 
@@ -49,7 +87,7 @@ class QuestionController extends Controller
 	{
 		
 		$criteria=new CDbCriteria(array(
-			'condition' => 'active=1',
+			'condition' => 'active = 1',
 			'order' => 'created DESC',
 			//'with'=>'commentCount',
 		));
@@ -58,14 +96,17 @@ class QuestionController extends Controller
 
 		$dataProvider= new CActiveDataProvider('Question', array(
 			'pagination'=>array(
+							'pageSize' => 8
 				//'pageSize'=>Yii::app()->params['postsPerPage'],
 			),
 			'criteria'=>$criteria,
 		));
+		
+		//$this->debug(User::model()->getGroupName());
 
-		$this->debug($dataProvider);
+		//$this->debug(Yii::app()->user->group_id);
 
-		$this->render('index',array(
+		$this->render('index', array(
 			'dataProvider'=>$dataProvider,
 		));
 	}
@@ -77,26 +118,31 @@ class QuestionController extends Controller
 	public function actionAdd()
 	{	
 
-		$model = new Question;
-		//$this->debug($_POST['Question']);
+		$model = new Question;		
 		if (isset($_POST['Question']))
 		{
-			$model->attributes = $_POST['Question'];
-		    if (Yii::app()->user->isGuest) {
-		  		$model->active = 0;
-		    } else {
-		  		$model->active = 1;
-		  		$model->user_id = Yii::app()->user->id;
-		    }
-			//$model->attributes = array('question_title' => 'hello', 'description' => 'hello world');
-			//	print_r($_POST['Question']);
-			//$this->debug($model->attributes );
-			//$model->validate();
-			//var_dump($model->getErrors());
-			//$this->debug($model->save());
-			//exit;
-			if ($model->save())
-				$this->redirect(array('view', 'id'=>$model->id));
+
+			$model->attributes = $_POST['Question'];             
+			if ($model->validate()) {				
+			    if (Yii::app()->user->isGuest) {
+			  		$model->active = 0;
+			  		Yii::app()->user->setFlash('block', "Your question is on under supervision!");
+			  		$redirect = array('index');		  		
+			    } else {
+			  		$model->active = 1;
+			  		$model->user_id = Yii::app()->user->id;
+			  		$redirect = array('view', 'id' => $model->id);
+			    }
+				//$model->attributes = array('question_title' => 'hello', 'description' => 'hello world');
+				//	print_r($_POST['Question']);
+				//$this->debug($model->attributes );
+				//$model->validate();
+				//var_dump($model->getErrors());
+				//$this->debug($model->save());
+				//exit;
+				if ($model->save())
+					$this->redirect($redirect);
+			}			
 		}
 	
 		$this->render('add',array(
@@ -121,6 +167,10 @@ class QuestionController extends Controller
 			))->find($criteria);
 
 		//$this->debug($data);
+		if (empty($data)) {
+			$this->redirect(array('index'));
+		}
+		//exit;
 		$model = new Answer;
 
 		if (isset($_POST['Answer'])) {
@@ -129,9 +179,11 @@ class QuestionController extends Controller
 			$model->question_id = $id;
 			if (Yii::app()->user->isGuest) {
 		  		$model->active = 0;
+		  		Yii::app()->user->setFlash('block', "Your answer is on under supervision!");
 		    } else {
 		  		$model->active = 1;
 		  		$model->user_id = Yii::app()->user->id;
+		  		
 		    }
 			if ($model->save())
 				$this->redirect(array('view', 'id'=>$id));
@@ -217,4 +269,56 @@ class QuestionController extends Controller
 	}// end delete
 
 
-}
+	/**
+	 * Lists all models.
+	 */
+	public function actionAdmin_Index()
+	{
+		
+		$criteria=new CDbCriteria(array(
+			//'condition' => 'active = 1',
+			'order' => 'active ASC',
+			//'with'=>'commentCount',
+		));
+		//if(isset($_GET['tag']))
+		//$criteria->addSearchCondition('active', 1);
+
+		$dataProvider= new CActiveDataProvider('Question', array(
+			'pagination'=>array(
+				'pageSize' => 8
+				//'pageSize'=>Yii::app()->params['postsPerPage'],
+			),
+			'criteria'=>$criteria,
+		));
+		
+		//$this->debug(User::model()->getGroupName());
+
+		//$this->debug(Yii::app()->user->group_id);
+		
+		$model = new Question;
+
+		$this->render('admin_index', array(
+			'dataProvider'=>$dataProvider,
+			'model' => $model
+		));
+	}
+
+
+	public function actionActivated($id = null) {
+
+		$model=$this->loadModel();
+       
+        if ($model->attributes['active']) {
+        	$flag = 0;
+        } else {
+        	$flag = 1;
+        }
+		$model->active = $flag;
+		$model->save();
+
+		echo json_encode($flag);
+		
+	}
+
+
+}//end class

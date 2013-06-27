@@ -28,12 +28,16 @@
     <script type="text/javascript" src="<?php echo Yii::app()->request->baseUrl; ?>/js/jquery.js"></script>
     <script type="text/javascript" src="<?php echo Yii::app()->request->baseUrl; ?>/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="<?php echo Yii::app()->request->baseUrl; ?>/js/jquery-te-1.3.5.min.js"></script>
+    <script type="text/javascript" src="<?php echo Yii::app()->request->baseUrl; ?>/js/custom.js"></script>
     
 
 	<title><?php echo CHtml::encode($this->pageTitle); ?></title>
 </head>
 
 <body>
+	<script>
+		var baseurl="<?php print Yii::app()->request->baseUrl;?>";
+	</script>
 
 <div class="container1" id="page">	
 
@@ -45,6 +49,12 @@
 	</div>
 	 
 	<?php endif; ?>
+
+	<?php	
+	    foreach(Yii::app()->user->getFlashes() as $key => $message) {
+	        echo '<div class="alert alert-' . $key . '"> <button type="button" class="close" data-dismiss="alert">&times;</button>' . $message . "</div>\n";
+	    }
+	?>
 
 	
 
@@ -63,9 +73,18 @@
 	              <?php echo CHtml::link('<i class="icon-plus"></i>Post Question',array('/question/add/')); ?>	           	
 	              </li>
 	              <li>
-	              	<?php echo CHtml::link('<i class="icon-plus"></i>Top Question',array('/question/')); ?>
+	              	<?php echo CHtml::link('<i class="icon-list"></i>All Question',array('/question/')); ?>
 	              </li>
-	              <li><a href="#">Director</a></li>
+
+	              <li>
+	              	<?php 
+	              	if (User::model()->getGroupName() == 'Admin') {
+	              		?>   <li class="nav-header">Admin Section</li> <?php
+	              		echo CHtml::link('<i class="icon-list"></i>All Question',array('/question/admin_index')); 
+	              	}
+	              	?>
+	              </li>
+	              <!--<li><a href="#">Director</a></li>
 	              <li><a href="#">Plates</a></li>
 	              <li><a href="#">Resourceful</a></li>
 	              <li class="active"><a href="#">Union</a></li>
@@ -74,7 +93,7 @@
 	              <li><a href="#">Initialization</a></li>
 	              <li class="active"><a href="#">Writing middleware</a></li>
 	              <li><a href="#">Error handling</a></li>
-	              <li><a href="#">Connect compatibility</a></li>
+	              <li><a href="#">Connect compatibility</a></li>-->
 	            </ul>
 	          </div>
 	        </div>

@@ -30,7 +30,44 @@ class Controller extends CController
         $debug .= "</pre></div>\n";
         Yii::app()->params['debugContent'] .=$debug;
     }
-   
+
+
+    protected function isGrantAccess($params = array()) {
+
+    	$access = array();
+    	$anonymous = true;
+		
+		foreach ($params as $role => $action) {
+
+			if (User::model()->getGroupName() == $role) {
+				$action = array_merge($action, $params['Anonymous']);
+				$access = array(
+					array(
+					 	'allow',  // allow all users to access 'index' and 'view' actions.
+						'actions' => $action,
+						'users' => array('@'),
+						//'expression' => "$groupId === 1"
+					),
+					array('deny')
+				);
+				$anonymous = false;			
+			} 
+		}
+
+		if ($anonymous) {
+			$access = array(
+				array(
+					'allow',
+					'actions' => $params['Anonymous'],
+					'users'=>array('*')
+				),
+				array('deny')
+			);
+		}			
+	
+		return $access;
+
+    }//end isGrantAccess()  
 
 	
 }

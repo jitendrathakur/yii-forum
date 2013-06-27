@@ -47,6 +47,8 @@ class UserIdentity extends CUserIdentity
         else
         {
             $this->_id=$record->id;
+             //assign the group_id from your "User model" to "Yii::app()->user->group_id" 
+            $this->setState('group_id', $record->group_id);
             //$this->setState('title', $record->title);
             $this->errorCode=self::ERROR_NONE;
         }

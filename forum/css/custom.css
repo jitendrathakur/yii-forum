@@ -22,3 +22,35 @@
 .question-block i {
 	color: #000000;
 }
+
+
+.success_ajax {
+    background-color: #FFFFFF;
+    border-radius: 4px 4px 4px 4px;
+    color: #006600;
+    float: left;
+    font-weight: bold;
+    margin-top: 20px;
+    padding: 2px;
+    position: absolute;
+    text-align: center;
+    width: 100px;
+}
+
+.failure_ajax {
+    background-color: #FFFFFF;
+    border-radius: 4px 4px 4px 4px;
+    color: #990000;
+    float: left;
+    font-weight: bold;
+    margin-top: 20px;
+    padding: 2px;
+    position: absolute;
+    text-align: center;
+    width: 100px;
+}
+
+.question_status {
+    float: right;
+    margin-left: 10px;
+}

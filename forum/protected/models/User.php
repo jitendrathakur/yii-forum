@@ -104,5 +104,20 @@ class User extends CActiveRecord
 	    );
 	}
 
+
+	public function getGroupName() {
+
+		if (Yii::app()->user->id) {
+
+			$data = $this->findByPk(Yii::app()->user->id);
+
+			return $data->group->name;
+		} else {
+			return;
+		}
+	
+
+	}//end getGroupName()
+
 	
 }
